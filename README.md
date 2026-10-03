@@ -39,7 +39,23 @@ Ouvrir `http://localhost:8080/` (ou `/home`). Si le port 8080 est occupé, déco
 
 ## Tester
 
+### 1. Tests automatiques (Maven)
+
 ```powershell
 .\mvnw.cmd test                                  # tous les tests
 .\mvnw.cmd -Dtest=Project1ApplicationTests test  # un seul test (contextLoads)
 ```
+
+Le seul test existant (`src/test/.../Project1ApplicationTests.java`) vérifie que le contexte Spring démarre (`contextLoads`). Résultat attendu : `Tests run: 1, Failures: 0, Errors: 0` + `BUILD SUCCESS`.
+
+### 2. Test manuel (CRUD dans le navigateur)
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+1. Ouvrir `http://localhost:8080/` (ou `/home`) — le tableau affiche 2 lignes initiales : `1 / Marouen / Ksentini`, `2 / Ahmed / Ksentini`.
+2. **Ajouter** : remplir prénom + nom → `Add` → `POST /students/add` → une nouvelle ligne apparaît (ID 3, 4, ...).
+3. **Modifier** : cliquer `Modify` → le formulaire passe en mode `Modify student` (`GET /students/edit/{id}` avec `editMode=true`) → changer les champs → `Update` → `POST /students/update/{id}`.
+4. **Supprimer** : cliquer `Delete` → `GET /students/delete/{id}` → la ligne disparaît.
+5. Arrêter avec `Ctrl+C`. Les données sont en mémoire : tout est réinitialisé au redémarrage.

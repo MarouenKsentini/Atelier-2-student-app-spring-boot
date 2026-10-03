@@ -2,6 +2,7 @@ HELP.md
 screenshot/
 TD-Spring-Boot.docx
 target/
+target_test-classes/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

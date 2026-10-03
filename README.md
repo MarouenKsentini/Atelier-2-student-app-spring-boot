@@ -18,33 +18,28 @@ Application web de gestion des étudiants — Spring Boot + Thymeleaf (CRUD en m
 
 ## Structure
 
-Le code utile est dans `project1/` (le dossier racine seul ne contient qu'un `@SpringBootApplication` vide — `GET /` y répond 404) :
-
 ```
-project1/
-  src/main/java/com/example/project1/
-    Project1Application.java
-    controller/HomeController.java   # CRUD en mémoire (ArrayList + AtomicLong)
-    model/Student.java               # id, firstName, lastName (Lombok @Data)
-  src/main/resources/
-    templates/index.html             # seule vue active (firstName/lastName, students/student/editMode)
-    templates/common/                # fragments header / menu / footer
-    application.properties           # spring.application.name=project1 (port 8080 par défaut)
+src/main/java/com/example/project1/
+  Project1Application.java
+  controller/HomeController.java   # CRUD en mémoire (ArrayList + AtomicLong)
+  model/Student.java               # id, firstName, lastName (Lombok @Data)
+src/main/resources/
+  templates/index.html             # seule vue active (firstName/lastName, students/student/editMode)
+  templates/common/                # fragments header / menu / footer
+  application.properties           # spring.application.name=project1 (port 8080 par défaut)
 ```
 
 ## Lancer l'application
 
 ```powershell
-Set-Location ".\project1"
 .\mvnw.cmd spring-boot:run
 ```
 
-Ouvrir `http://localhost:8080/` (ou `/home`). Si le port 8080 est occupé, décommenter `#server.port=8082` dans `project1/src/main/resources/application.properties`.
+Ouvrir `http://localhost:8080/` (ou `/home`). Si le port 8080 est occupé, décommenter `#server.port=8082` dans `src/main/resources/application.properties`.
 
 ## Tester
 
 ```powershell
-Set-Location ".\project1"
 .\mvnw.cmd test                                  # tous les tests
 .\mvnw.cmd -Dtest=Project1ApplicationTests test  # un seul test (contextLoads)
 ```

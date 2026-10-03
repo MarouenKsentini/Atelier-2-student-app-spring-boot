@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Students - spring-boot</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    header { background: #222; color: #fff; padding: 12px 20px; }
+    header a { color: #fff; text-decoration: none; }
+    main { padding: 20px; max-width: 800px; margin: 0 auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    form { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    input { padding: 6px; }
+    button, .btn { padding: 6px 12px; cursor: pointer; }
+    footer { background: #f0f0f0; text-align: center; padding: 12px; margin-top: 24px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/">Student App</a>
+</header>
+
+<main>
+  <h1>Students</h1>
+
+  <!-- ADD FORM -->
+  <div th:if="${editMode == null or !editMode}">
+    <h2>Add student</h2>
+    <form th:action="@{/students/add}" th:object="${student}" method="post">
+      <input type="text" th:field="*{firstName}" placeholder="First name" required>
+      <input type="text" th:field="*{lastName}" placeholder="Last name" required>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+
+  <!-- EDIT FORM -->
+  <div th:if="${editMode}">
+    <h2>Modify student</h2>
+    <form th:action="@{/students/update/{id}(id=${student.id})}" th:object="${student}" method="post">
+      <input type="text" th:field="*{firstName}" placeholder="First name" required>
+      <input type="text" th:field="*{lastName}" placeholder="Last name" required>
+      <button type="submit">Update</button>
+      <a class="btn" href="/">Cancel</a>
+    </form>
+  </div>
+
+  <!-- 3-COLUMN TABLE -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(students)}">
+        <td colspan="4">No students to display.</td>
+      </tr>
+      <tr th:each="s : ${students}">
+        <td th:text="${s.id}"></td>
+        <td th:text="${s.firstName}"></td>
+        <td th:text="${s.lastName}"></td>
+        <td>
+          <a th:href="@{/students/edit/{id}(id=${s.id})}">Modify</a>
+          |
+          <a th:href="@{/students/delete/{id}(id=${s.id})}">Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<footer>
+  Student App — Spring Boot + Thymeleaf
+</footer>
+
+</body>
+</html>

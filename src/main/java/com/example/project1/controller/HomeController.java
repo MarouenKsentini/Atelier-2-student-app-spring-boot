@@ -1,9 +1,7 @@
 package com.example.project1.controller;
 
-import com.example.project1.model.Student;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import com.example.project1.model.Etudiant;
+import com.example.project1.service.EtudiantService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,55 +12,69 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class HomeController {
 
-    private final List<Student> students = new ArrayList<>();
-    private final AtomicLong nextId = new AtomicLong(3L);
-    public HomeController() {
-        students.add(new Student(1L, "Marouen", "Ksentini"));
-        students.add(new Student(2L, "Ahmed", "Ksentini"));
+    private final EtudiantService etudiantService;
+
+    public HomeController(EtudiantService etudiantService) {
+        this.etudiantService = etudiantService;
     }
+
+    // HOME = liste complète des étudiants
     @GetMapping({"/", "/home"})
     public String home(Model model) {
-        model.addAttribute("students", students);
-        if (!model.containsAttribute("student")) {
-            model.addAttribute("student", new Student());
-        }
+        model.addAttribute("students", etudiantService.lister());
         return "index";
     }
-    @PostMapping("/students/add")
-    public String add(@ModelAttribute Student student) {
-        student.setId(nextId.getAndIncrement());
-        students.add(student);
-        return "redirect:/";
+
+    // PAGE FORMULAIRE (ajout)
+    @GetMapping("/students/new")
+    public String newForm(Model model) {
+        if (!model.containsAttribute("student")) {
+            model.addAttribute("student", new Etudiant());
+        }
+        return "formulaire";
     }
+
+    // SUBMIT formulaire -> liste
+    @PostMapping("/students/add")
+    public String add(@ModelAttribute("student") Etudiant etudiant) {
+        etudiantService.ajouter(etudiant);
+        return "redirect:/students/list";
+    }
+
+    @GetMapping("/students/list")
+    public String list(Model model) {
+        model.addAttribute("students", etudiantService.listerFormulaire());
+        return "liste";
+    }
+
     @GetMapping("/students/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        Student found = findById(id);
+        Etudiant found = etudiantService.findById(id);
         if (found == null) {
-            return "redirect:/";
+            return "redirect:/students/list";
         }
-        model.addAttribute("students", students);
         model.addAttribute("student", found);
         model.addAttribute("editMode", true);
-        return "index";
+        return "formulaire";
     }
+
     @PostMapping("/students/update/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute Student student) {
-        Student found = findById(id);
+    public String update(@PathVariable Long id, @ModelAttribute("student") Etudiant etudiant) {
+        Etudiant found = etudiantService.findById(id);
         if (found != null) {
-            found.setFirstName(student.getFirstName());
-            found.setLastName(student.getLastName());
+            found.setNumeroInscription(etudiant.getNumeroInscription());
+            found.setNom(etudiant.getNom());
+            found.setPrenom(etudiant.getPrenom());
+            found.setDateNaissance(etudiant.getDateNaissance());
+            found.setMoyenneAnneePrecedente(etudiant.getMoyenneAnneePrecedente());
+            found.setNiveauEtude(etudiant.getNiveauEtude());
         }
-        return "redirect:/";
+        return "redirect:/students/list";
     }
+
     @GetMapping("/students/delete/{id}")
     public String delete(@PathVariable Long id) {
-        students.removeIf(s -> s.getId().equals(id));
-        return "redirect:/";
-    }
-    private Student findById(Long id) {
-        return students.stream()
-                .filter(s -> s.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        etudiantService.supprimer(id);
+        return "redirect:/students/list";
     }
 }
